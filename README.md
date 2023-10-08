@@ -1,7 +1,6 @@
 # Gabriel.Rosario.AIGS1003A1
 Gabriel Rosario AIGS1003 Assignment 1
 
-OUTPUT
 
 (venv) PS C:\Users\garosario\OneDrive - Loyalist College\ML_Assignment\Q2Python3> python dataClassifier.py -c naiveBayes --autotune 
 Doing classification
