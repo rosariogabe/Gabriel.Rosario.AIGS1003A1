@@ -13,8 +13,8 @@ Image:
 
 
 
-Doing classification
-"--------------------"
+"""Doing classification
+--------------------
 data:           digits
 classifier:             naiveBayes
 training set size:      100
@@ -36,7 +36,7 @@ Validating...
 74 correct out of 100 (74.0%).
 Testing...
 65 correct out of 100 (65.0%).
-===================================
+==================================="""
 
           +#########+
          +###########+
