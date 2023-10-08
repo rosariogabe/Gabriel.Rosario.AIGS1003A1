@@ -10,7 +10,8 @@ Let x=(x1,x2,…,xn). Using Bayesian theorem
 
 https://towardsdatascience.com/introduction-to-na%C3%AFve-bayes-classifier-fa59e3e24aaf
 
-
+Laplace smoothing in Naïve Bayes algorithm
+Solving the zero probability problem in Naïve Bayes algorithm
 
 "(venv) PS C:\Users\garosario\OneDrive - Loyalist College\ML_Assignment\Q2Python3> python dataClassifier.py -c naiveBayes --autotune "
 
