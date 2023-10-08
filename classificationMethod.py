@@ -44,4 +44,3 @@ class ClassificationMethod:
     as lists of Counters containing feature descriptions and their counts.
     """
     abstract
-
