@@ -133,28 +133,27 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     #datum Counter of features    
     #log-joint probabilities for each legal label
     logJoint = util.Counter()
-    
-    "*** YOUR CODE HERE ***"
-        # Formula: log(P(y | x)) = log(P(y)) + Σ [x_i * log(P(x_i | y)) + (1 - x_i) * log(1 - P(x_i | y))]
-        for label in self.legalLabels:
-            logJoint[label] = math.log(self.prior[label])
-            for feat, value in datum.items():
-                conditional_prob = self.conditionalProb[(feat, label)]
-                logJoint[label] += value * math.log(conditional_prob) + (1 - value) * math.log(1 - conditional_prob)   
-                
+
+    #Formula: log(P(y | x)) = log(P(y)) + Σ [x_i * log(P(x_i | y)) + (1 - x_i) * log(1 - P(x_i | y))]
+    for label in self.legalLabels:
+        logJoint[label] = math.log(self.prior[label])
+        for feat, value in datum.items():
+            conditional_prob = self.conditionalProb[(feat, label)]
+            logJoint[label] += value * math.log(conditional_prob) + (1 - value) * math.log(1 - conditional_prob)
+
     #util.raiseNotDefined()
     
     return logJoint
   
     def findHighOddsFeatures(self, label1, label2):
-    """
-    Returns the 100 best features for the odds ratio:
-            P(feature=1 | label1)/P(feature=1 | label2) 
-    """
-    featuresOdds = []       
+        """
+        Returns the 100 best features for the odds ratio:
+                P(feature=1 | label1)/P(feature=1 | label2)
+        """
+        featuresOdds = []
 
         "*** YOUR CODE HERE ***"
-        for feat in self.features
+        for feat in self.features:
            # Formula for odds ratio: P(feature=1 | label1) / P(feature=1 | label2)
             odds_ratio = (
                 self.conditionalProb[(feat, label1)] / self.conditionalProb[(feat, label2)]
@@ -166,4 +165,4 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
         featuresOdds = [feat for _, feat in featuresOdds[:100]]    
         #util.raiseNotDefined()
 
-    return featuresOdds
+        return featuresOdds
