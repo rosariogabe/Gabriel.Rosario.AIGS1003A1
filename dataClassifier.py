@@ -58,11 +58,11 @@ def analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
       prediction = guesses[i]
       truth = testLabels[i]
       if (prediction != truth):
-          print "==================================="
-          print "Mistake on example %d" % i 
-          print "Predicted %d; truth is %d" % (prediction, truth)
-          print "Image: "
-          print rawTestData[i]
+          print("===================================")
+          print("Mistake on example %d" % i) 
+          print("Predicted %d; truth is %d" % (prediction, truth))
+          print("Image: ")
+          print(rawTestData[i])
           break
 
 
@@ -95,27 +95,27 @@ def readCommand( argv ):
   args = {}
   
   # Set up variables according to the command line input.
-  print "Doing classification"
-  print "--------------------"
-  print "data:\t\t" + options.data
-  print "classifier:\t\t" + options.classifier
-  print "training set size:\t" + str(options.training)
+  print("Doing classification")
+  print("--------------------")
+  print("data:\t\t" + options.data)
+  print("classifier:\t\t" + options.classifier)
+  print("training set size:\t" + str(options.training))
   if(options.data=="digits"):
-    printImage = ImagePrinter(DIGIT_DATUM_WIDTH, DIGIT_DATUM_HEIGHT).printImage
+    printImage = ImagePrinter(DIGIT_DATUM_WIDTH, DIGIT_DATUM_HEIGHT)
     featureFunction = basicFeatureExtractorDigit    
   else:
-    print "Unknown dataset", options.data
-    print USAGE_STRING
+    print("Unknown dataset", options.data)
+    print(USAGE_STRING)
     sys.exit(2)
     
   if(options.data=="digits"):
-    legalLabels = range(10)
+    legalLabels = list(range(10))
   else:
-    legalLabels = range(2)
+    legalLabels = list(range(2))
     
   if options.training <= 0:
-    print "Training set size should be a positive integer (you provided: %d)" % options.training
-    print USAGE_STRING
+    print("Training set size should be a positive integer (you provided: %d)" % options.training)
+    print(USAGE_STRING)
     sys.exit(2)
 
   if(options.classifier == "mostFrequent"):
@@ -123,11 +123,11 @@ def readCommand( argv ):
   elif(options.classifier == "naiveBayes" or options.classifier == "nb"):
     classifier = naiveBayes.NaiveBayesClassifier(legalLabels)
     if (options.autotune):
-        print "using automatic tuning for naivebayes"
+        print("using automatic tuning for naivebayes")
         classifier.automaticTuning = True
   else:
-    print "Unknown classifier:", options.classifier
-    print USAGE_STRING
+    print("Unknown classifier:", options.classifier)
+    print(USAGE_STRING)
     
     sys.exit(2)
 
@@ -156,31 +156,31 @@ def runClassifier(args, options):
   # Load data  
   numTraining = options.training
 
-  rawTrainingData = samples.loadDataFile("digitdata/trainingimages", numTraining,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
-  trainingLabels = samples.loadLabelsFile("digitdata/traininglabels", numTraining)
-  rawValidationData = samples.loadDataFile("digitdata/validationimages", TEST_SET_SIZE,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
-  validationLabels = samples.loadLabelsFile("digitdata/validationlabels", TEST_SET_SIZE)
-  rawTestData = samples.loadDataFile("digitdata/testimages", TEST_SET_SIZE,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
-  testLabels = samples.loadLabelsFile("digitdata/testlabels", TEST_SET_SIZE)
+  rawTrainingData = samples.loadDataFile("trainingimages", numTraining,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
+  trainingLabels = samples.loadLabelsFile("traininglabels", numTraining)
+  rawValidationData = samples.loadDataFile("validationimages", TEST_SET_SIZE,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
+  validationLabels = samples.loadLabelsFile("validationlabels", TEST_SET_SIZE)
+  rawTestData = samples.loadDataFile("testimages", TEST_SET_SIZE,DIGIT_DATUM_WIDTH,DIGIT_DATUM_HEIGHT)
+  testLabels = samples.loadLabelsFile("testlabels", TEST_SET_SIZE)
     
   
   # Extract features
-  print "Extracting features..."
-  trainingData = map(featureFunction, rawTrainingData)
-  validationData = map(featureFunction, rawValidationData)
-  testData = map(featureFunction, rawTestData)
+  print("Extracting features...")
+  trainingData = list(map(featureFunction, rawTrainingData))
+  validationData = list(map(featureFunction, rawValidationData))
+  testData = list(map(featureFunction, rawTestData))
   
   # Conduct training and testing
-  print "Training..."
+  print("Training...")
   classifier.train(trainingData, trainingLabels, validationData, validationLabels)
-  print "Validating..."
+  print("Validating...")
   guesses = classifier.classify(validationData)
   correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
-  print str(correct), ("correct out of " + str(len(validationLabels)) + " (%.1f%%).") % (100.0 * correct / len(validationLabels))
-  print "Testing..."
+  print(str(correct), ("correct out of " + str(len(validationLabels)) + " (%.1f%%).") % (100.0 * correct / len(validationLabels)))
+  print("Testing...")
   guesses = classifier.classify(testData)
   correct = [guesses[i] == testLabels[i] for i in range(len(testLabels))].count(True)
-  print str(correct), ("correct out of " + str(len(testLabels)) + " (%.1f%%).") % (100.0 * correct / len(testLabels))
+  print(str(correct), ("correct out of " + str(len(testLabels)) + " (%.1f%%).") % (100.0 * correct / len(testLabels)))
   analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
 
 if __name__ == '__main__':
