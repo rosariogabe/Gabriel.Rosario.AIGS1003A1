@@ -1,11 +1,8 @@
 # Gabriel.Rosario.AIGS1003A1
 Gabriel Rosario AIGS1003 Assignment 1
 
-  File "C:\Users\garosario\OneDrive - Loyalist College\ML_Assignment\Q2Python3\dataClassifier.py", line 5, in <module>
-    import naiveBayes
-  File "C:\Users\garosario\OneDrive - Loyalist College\ML_Assignment\Q2Python3\naiveBayes.py", line 139
-    for label in self.legalLabels:
-IndentationError: unexpected indent
+OUTPUT
+
 (venv) PS C:\Users\garosario\OneDrive - Loyalist College\ML_Assignment\Q2Python3> python dataClassifier.py -c naiveBayes --autotune 
 Doing classification
 --------------------
