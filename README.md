@@ -2,9 +2,11 @@
 Gabriel Rosario AIGS1003 Assignment 1
 
 
-(venv) PS C:\Users\garosario\OneDrive - Loyalist College\ML_Assignment\Q2Python3> python dataClassifier.py -c naiveBayes --autotune 
+"(venv) PS C:\Users\garosario\OneDrive - Loyalist College\ML_Assignment\Q2Python3> python dataClassifier.py -c naiveBayes --autotune "
+
+
 Doing classification
---------------------
+"--------------------"
 data:           digits
 classifier:             naiveBayes
 training set size:      100
