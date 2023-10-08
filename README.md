@@ -1,6 +1,16 @@
 # Gabriel.Rosario.AIGS1003A1
 Gabriel Rosario AIGS1003 Assignment 1
 
+An Introduction to Naïve Bayes Classifier
+From theory to practice, learn underlying principles of Naïve Bayes
+
+The goal of Naïve Bayes Classifier is to calculate conditional probability:
+for each of K possible outcomes or classes Ck.
+Let x=(x1,x2,…,xn). Using Bayesian theorem
+
+https://towardsdatascience.com/introduction-to-na%C3%AFve-bayes-classifier-fa59e3e24aaf
+
+
 
 "(venv) PS C:\Users\garosario\OneDrive - Loyalist College\ML_Assignment\Q2Python3> python dataClassifier.py -c naiveBayes --autotune "
 
