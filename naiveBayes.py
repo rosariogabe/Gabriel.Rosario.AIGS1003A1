@@ -68,14 +68,14 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
 
     # Common training - get all counts from training data
     common_prior = util.Counter()  # Probability over labels
-    common_conditional_prob = util.Counter()  # Conditional probability of feature feat being 1
-    common_counts = util.Counter()  # How many times I have seen feature feat with label y
+    common_conditional_prob = util.Counter()  # Conditional probability counters
+    common_counts = util.Counter()  # Times
 
     for datum, label in zip(trainingData, trainingLabels):
         common_prior[label] += 1
         for feat, value in datum.items():
             common_counts[(feat, label)] += 1
-            if value > 0:  # Assume binary value
+            if value > 0:  # Assume a binary 
                 common_conditional_prob[(feat, label)] += 1
 
     for k in kgrid:  # Smoothing parameter tuning loop
@@ -89,7 +89,7 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
                 conditional_prob[(feat, label)] += k
                 counts[(feat, label)] += 2 * k  # 2 because both value 0 and 1 are smoothed
 
-        # Normalize probabilities
+        # Normalize probabilities make them to sume 1
         prior.normalize()
         for x, count in conditional_prob.items():
             conditional_prob[x] = count / counts[x]
@@ -97,11 +97,11 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
         self.prior = prior
         self.conditionalProb = conditional_prob
 
-        # Evaluate performance on the validation set
+        # Evaluate performance 
         predictions = self.classify(validationData)
         accuracy = sum(predictions[i] == validationLabels[i] for i in range(len(validationLabels))) / len(validationLabels)
 
-        print(f"Performance on validation set for k={k:.3f}: {accuracy * 100:.1f}%")
+        print(f"Performance validation set for k={k:.3f}: {accuracy * 100:.1f}%")
         if accuracy > best_accuracy:
             best_params = (prior, conditional_prob, k)
             best_accuracy = accuracy
