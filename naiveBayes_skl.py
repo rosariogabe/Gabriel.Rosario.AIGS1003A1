@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[8]:
+
+
 import util
 import classificationMethod
 import math
@@ -39,67 +45,67 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
         
     self.trainAndTune(trainingData, trainingLabels, validationData, validationLabels, kgrid)
       
-def trainAndTune(self, trainingData, trainingLabels, validationData, validationLabels, kgrid):
-    best_accuracy = -1  # Best accuracy on the validation set
-    best_params = None  # Best parameters (prior, conditionalProb, k)
+    def trainAndTune(self, trainingData, trainingLabels, validationData, validationLabels, kgrid):
+        best_accuracy = -1  # Best accuracy on the validation set
+        best_params = None  # Best parameters (prior, conditionalProb, k)
 
-    for k in kgrid:
-        # Split the training data into training and validation sets
-        X_train, X_valid, y_train, y_valid = train_test_split(trainingData, trainingLabels, test_size=0.2, random_state=42)
+        for k in kgrid:
+            # Split the training data into training and validation sets
+            X_train, X_valid, y_train, y_valid = train_test_split(trainingData, trainingLabels, test_size=0.2, random_state=42)
 
-        # Create a Naive Bayes classifier with Laplace smoothing (alpha = k)
-        nb_classifier = MultinomialNB(alpha=k)
+            # Create a Naive Bayes classifier with Laplace smoothing (alpha = k)
+            nb_classifier = MultinomialNB(alpha=k)
 
-        # Train the classifier on the training data
-        nb_classifier.fit(X_train, y_train)
+            # Train the classifier on the training data
+            nb_classifier.fit(X_train, y_train)
 
-        # Make predictions on the validation data
-        y_pred = nb_classifier.predict(X_valid)
+            # Make predictions on the validation data
+            y_pred = nb_classifier.predict(X_valid)
 
-        # Calculate the accuracy
-        accuracy = accuracy_score(y_valid, y_pred)
+            # Calculate the accuracy
+            accuracy = accuracy_score(y_valid, y_pred)
 
-        print(f"Performance validation set for k={k:.3f}: {accuracy * 100:.1f}%")
+            print(f"Performance validation set for k={k:.3f}: {accuracy * 100:.1f}%")
 
-        if accuracy > best_accuracy:
-            best_params = (nb_classifier, k)
-            best_accuracy = accuracy
+            if accuracy > best_accuracy:
+                best_params = (nb_classifier, k)
+                best_accuracy = accuracy
 
     # Set the best classifier and k after tuning
     self.classifier, self.k = best_params
 
     #util.raiseNotDefined()
         
-  def classify(self, testData):
-    """
-    Classify the data based on the posterior distribution over labels.
-    
-    You shouldn't modify this method.
-    """
-    guesses = []
-    self.posteriors = [] # Log posteriors are stored for later data analysis (autograder).
-    for datum in testData:
-      posterior = self.calculateLogJointProbabilities(datum)
-      guesses.append(posterior.argMax())
-      self.posteriors.append(posterior)
-    return guesses
-        
-  def calculateLogJointProbabilities(self, datum):
-    """
-    Returns the log-joint distribution over legal labels and the datum.
-    Each log-probability should be stored in the log-joint counter, e.g.    
-    logJoint[3] = <Estimate of log( P(Label = 3, datum) )>
-    """
-    #datum Counter of features    
-    #log-joint probabilities for each legal label
-    logJoint = util.Counter()
+    def classify(self, testData):
+        """
+        Classify the data based on the posterior distribution over labels.
 
-    #Formula: log(P(y | x)) = log(P(y)) + Σ [x_i * log(P(x_i | y)) + (1 - x_i) * log(1 - P(x_i | y))]
-    for label in self.legalLabels:
-        logJoint[label] = math.log(self.prior[label])
-        for feat, value in datum.items():
-            conditional_prob = self.conditionalProb[(feat, label)]
-            logJoint[label] += value * math.log(conditional_prob) + (1 - value) * math.log(1 - conditional_prob)
+        You shouldn't modify this method.
+        """
+        guesses = []
+        self.posteriors = [] # Log posteriors are stored for later data analysis (autograder).
+        for datum in testData:
+          posterior = self.calculateLogJointProbabilities(datum)
+          guesses.append(posterior.argMax())
+          self.posteriors.append(posterior)
+        return guesses
+        
+    def calculateLogJointProbabilities(self, datum):
+        """
+        Returns the log-joint distribution over legal labels and the datum.
+        Each log-probability should be stored in the log-joint counter, e.g.    
+        logJoint[3] = <Estimate of log( P(Label = 3, datum) )>
+        """
+        #datum Counter of features    
+        #log-joint probabilities for each legal label
+        logJoint = util.Counter()
+
+        #Formula: log(P(y | x)) = log(P(y)) + Σ [x_i * log(P(x_i | y)) + (1 - x_i) * log(1 - P(x_i | y))]
+        for label in self.legalLabels:
+            logJoint[label] = math.log(self.prior[label])
+            for feat, value in datum.items():
+                conditional_prob = self.conditionalProb[(feat, label)]
+                logJoint[label] += value * math.log(conditional_prob) + (1 - value) * math.log(1 - conditional_prob)
 
     #util.raiseNotDefined()
     
@@ -126,3 +132,4 @@ def trainAndTune(self, trainingData, trainingLabels, validationData, validationL
         #util.raiseNotDefined()
 
         return featuresOdds
+
