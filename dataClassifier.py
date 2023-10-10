@@ -7,7 +7,7 @@ import samples
 import sys
 import util
 
-TEST_SET_SIZE = 100
+TEST_SET_SIZE = 300
 DIGIT_DATUM_WIDTH=28
 DIGIT_DATUM_HEIGHT=28
 FACE_DATUM_WIDTH=60
