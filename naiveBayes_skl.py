@@ -24,26 +24,26 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     self.k = 1 # this is the smoothing parameter, ** use it in your train method **
     self.automaticTuning = False # Look at this flag to decide whether to choose k automatically ** use this in your train method **
     
-  def setSmoothing(self, k):
-    """
-    This is used by the main method to change the smoothing parameter before training.
-    Do not modify this method.
-    """
-    self.k = k
+    def setSmoothing(self, k):
+        """
+        This is used by the main method to change the smoothing parameter before training.
+        Do not modify this method.
+        """
+        self.k = k
 
-  def train(self, trainingData, trainingLabels, validationData, validationLabels):
-    """
-    Outside shell to call your method. Do not modify this method.
-    """  
-      
-    self.features = list(trainingData[0].keys()) # this could be useful for your code later...
-    
-    if (self.automaticTuning):
-        kgrid = [0.001, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 20, 50]
-    else:
-        kgrid = [self.k]
-        
-    self.trainAndTune(trainingData, trainingLabels, validationData, validationLabels, kgrid)
+    def train(self, trainingData, trainingLabels, validationData, validationLabels):
+        """
+        Outside shell to call your method. Do not modify this method.
+        """  
+
+        self.features = list(trainingData[0].keys()) # this could be useful for your code later...
+
+        if (self.automaticTuning):
+            kgrid = [0.001, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 20, 50]
+        else:
+            kgrid = [self.k]
+
+        self.trainAndTune(trainingData, trainingLabels, validationData, validationLabels, kgrid)
       
     def trainAndTune(self, trainingData, trainingLabels, validationData, validationLabels, kgrid):
         best_accuracy = -1  # Best accuracy on the validation set
@@ -71,10 +71,10 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
                 best_params = (nb_classifier, k)
                 best_accuracy = accuracy
 
-    # Set the best classifier and k after tuning
-    self.classifier, self.k = best_params
+        # Set the best classifier and k after tuning
+        self.classifier, self.k = best_params
 
-    #util.raiseNotDefined()
+        #util.raiseNotDefined()
         
     def classify(self, testData):
         """
