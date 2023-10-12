@@ -73,3 +73,37 @@ Image:
 
 
 M:\ML_Assignment\REPO>
+
+
+Classify the following statements, “a cup of hot coffee” and “a cone of ice cream”, given the categories Sunny and Rainy. The following is a training data:
+Training Data
+Expression	Category	Statements
+it is raining	rainy	a cup of hot coffee
+picnic on a hot afternoon	sunny	a cone of ice cream
+they wore sunglasses	sunny	a cone of ice cream
+going out with an umbrella	rainy	a cup of hot coffee
+
+
+
+Creating word features Assuming that every word is independent of the other ones:
+1)
+P(a cone of ice cream) = P(a) * P(cone) * P(of) * P(ice) * P(cream)
+P(a cone of ice cream|sunny) =  P(a|sunny) * P(cone|sunny) * P(of|sunny) * P(ice|sunny) * P(cream|sunny)
+
+2)
+P(a cup of hot coffee) =  P(a) * P(cup) * P(of) * P(hot) * P(coffee)
+P(rainy|a cup of hot coffee) =  P(a|rainy) * P(cup|rainy) * P(of|rainy) * P(hot|rainy) * P(coffee|rainy)
+
+For each category ("Sunny" or "Rainy")
+As we see we, maximizes the posterior probability based on Bayes' Theorem
+With the Conditional independence assumption, we can express that way.
+So, for each statement and category, we will decompose the joint distribution into a product of conditional probabilities for each word in the statement based on the category C. The category with the higher posterior probability will be the predicted category for the statement.
+Now we have every word in our training dataset several times for calculate the probabilities. 
+•	Calculating Probabilities: Calculate the probability is counting in our training data.
+•	Priori Probability of each tag P(sunny).
+•	Normalize to make them sum 1.
+•	Correct the Zero Probability: Apply Laplace smoothing adding 1 to every count so it’s never zero.
+Calculating then P(A|B) : by counting how many times the word of our new sets appears and divide by the total number of the words in Sunny.
+
+https://monkeylearn.com/blog/practical-explanation-naive-bayes-classifier/
+
