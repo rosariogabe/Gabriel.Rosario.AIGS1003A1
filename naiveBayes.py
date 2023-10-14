@@ -13,7 +13,7 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     self.legalLabels = legalLabels
     self.type = "naivebayes"
     self.k = 1 # this is the smoothing parameter, ** use it in your train method **
-    self.automaticTuning = False # Look at this flag to decide whether to choose k automatically ** use this in your train method **
+    self.automaticTuning = True # Look at this flag to decide whether to choose k automatically ** use this in your train method **
     
   def setSmoothing(self, k):
     """
@@ -21,7 +21,7 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     Do not modify this method.
     """
     self.k = k
-
+    
   def train(self, trainingData, trainingLabels, validationData, validationLabels):
     """
     Outside shell to call your method. Do not modify this method.
@@ -37,79 +37,78 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     self.trainAndTune(trainingData, trainingLabels, validationData, validationLabels, kgrid)
       
   def trainAndTune(self, trainingData, trainingLabels, validationData, validationLabels, kgrid):
+    #Calculate counts and probabilities = P(A|B) = P(B|A) * P(A) / P(B), 
+    #P(A) = Prior_Probability or marginal probability, P(A|B) = Posterior Probability, P(B|A) = Likelihood, P(B) Evidence
+    prior_probability, conditional_prob, counts = self.computeCounts(trainingData, trainingLabels)
+
+    best_params = self.findBestSmoothingParameter(prior_probability, conditional_prob, counts, kgrid, validationData, validationLabels)
+
+    # Set the best parameters after tuning
+    self.prior, self.conditionalProb, self.k = best_params
+
+  def computeCounts(self, trainingData, trainingLabels):
     """
-    Trains the classifier by collecting counts over the training data, and
-    stores the Laplace smoothed estimates so that they can be used to classify.
-    Evaluate each value of k in kgrid to choose the smoothing parameter 
-    that gives the best accuracy on the held-out validationData.
-    
-    trainingData and validationData are lists of feature Counters.  The corresponding
-    label lists contain the correct label for each datum.
-    
-    To get the list of all possible features or labels, use self.features and 
-    self.legalLabels.
+    Compute prior, conditional probabilities, and counts from training data.
     """
-
-    """
-    GABRIEL ROSARIO
-    Trains the classifier using Laplace smoothing and selects the best value of k
-    based on accuracy on the validation set.
-
-    Args:
-    trainingData - list of Counters - Training data.
-    trainingLabels - list of Labels for the training data.
-    validationData - list of Counters - Validation data.
-    validationLabels - list Labels for the validation data.
-    kgrid list of float  List of candidate values for the smoothing parameter k.
-    """    
-
-    best_accuracy = -1  # Best accuracy on validation set
-    best_params = None  # Best parameters (prior, conditionalProb, k)
-
-    # Common training - get all counts from training data
-    common_prior = util.Counter()  # Probability over labels
-    common_conditional_prob = util.Counter()  # Conditional probability counters
-    common_counts = util.Counter()  # Times
+    prior_probability = util.Counter()
+    conditional_prob = util.Counter()
+    counts = util.Counter()
 
     for datum, label in zip(trainingData, trainingLabels):
-        common_prior[label] += 1
+        prior_probability[label] += 1
         for feat, value in datum.items():
-            common_counts[(feat, label)] += 1
-            if value > 0:  # Assume a binary 
-                common_conditional_prob[(feat, label)] += 1
+            counts[(feat, label)] += 1
+            if value > 0:  #Assume binary
+                conditional_prob[(feat, label)] += 1
 
-    for k in kgrid:  # Smoothing parameter tuning loop
-        prior = common_prior.copy()
-        conditional_prob = common_conditional_prob.copy()
-        counts = common_counts.copy()
+    return prior_probability, conditional_prob, counts    
+  def findBestSmoothingParameter(self, common_prior, common_conditional_prob, common_counts, kgrid, validationData, validationLabels):
+    """
+    Find the best smoothing parameter k based on accuracy on the validation set.
+    """
+    best_accuracy = -1
+    best_params = None
+    
+    for k in kgrid:
+        prior, conditional_prob, counts = self.applySmoothing(k, common_prior, common_conditional_prob, common_counts)
 
-        # Apply Laplace smoothing
-        for label in self.legalLabels:
-            for feat in self.features:
-                conditional_prob[(feat, label)] += k
-                counts[(feat, label)] += 2 * k  # 2 because both value 0 and 1 are smoothed
+        accuracy = self.evaluateAccuracy(validationData, validationLabels, prior, conditional_prob)
 
-        # Normalize probabilities make them to sume 1
-        prior.normalize()
-        for x, count in conditional_prob.items():
-            conditional_prob[x] = count / counts[x]
-
-        self.prior = prior
-        self.conditionalProb = conditional_prob
-
-        # Evaluate performance 
-        predictions = self.classify(validationData)
-        accuracy = sum(predictions[i] == validationLabels[i] for i in range(len(validationLabels))) / len(validationLabels)
-
-        print(f"Performance validation set for k={k:.3f}: {accuracy * 100:.1f}%")
         if accuracy > best_accuracy:
             best_params = (prior, conditional_prob, k)
             best_accuracy = accuracy
 
-        # Set the best parameters after tuning
-        self.prior, self.conditionalProb, self.k = best_params
-    #util.raiseNotDefined()
+        print(f"Performance validation set for k={k:.3f}: {accuracy * 100:.1f}%")
         
+    return best_params
+    
+  def applySmoothing(self, k, common_prior, common_conditional_prob, common_counts):
+    """
+    Apply Laplace smoothing to the common counts and probabilities for a given k.
+    """
+    prior = common_prior.copy()
+    conditional_prob = common_conditional_prob.copy()
+    counts = common_counts.copy()
+
+    for label in self.legalLabels:
+        for feat in self.features:
+            conditional_prob[(feat, label)] += k
+            counts[(feat, label)] += 2 * k  # 2 because both value 0 and 1 are smoothed
+
+    prior.normalize()
+    for x, count in conditional_prob.items():
+        conditional_prob[x] = count / counts[x]
+
+    return prior, conditional_prob, counts
+    
+  def evaluateAccuracy(self, validationData, validationLabels, prior, conditional_prob):
+    """
+    Evaluate the accuracy of the classifier on the validation set using the given parameters.
+    """
+    predictions = self.classify(validationData)
+    accuracy = sum(predictions[i] == validationLabels[i] for i in range(len(validationLabels))) / len(validationLabels)
+    return accuracy
+    
   def classify(self, testData):
     """
     Classify the data based on the posterior distribution over labels.
@@ -144,25 +143,23 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     #util.raiseNotDefined()
     
     return logJoint
-  
-    def findHighOddsFeatures(self, label1, label2):
-        """
-        Returns the 100 best features for the odds ratio:
-                P(feature=1 | label1)/P(feature=1 | label2)
-        """
-        featuresOdds = []
+    
+  def findHighOddsFeatures(self, label1, label2):
+    """
+    Returns the 100 best features for the odds ratio:
+            P(feature=1 | label1)/P(feature=1 | label2)
+    """
+    featuresOdds = []
 
-        "*** YOUR CODE HERE ***"
-        for feat in self.features:
-           # Formula for odds ratio: P(feature=1 | label1) / P(feature=1 | label2)
-            odds_ratio = (
-                self.conditionalProb[(feat, label1)] / self.conditionalProb[(feat, label2)]
-            )
-            featuresOdds.append((odds_ratio, feat))
+    "*** YOUR CODE HERE ***"
+    for feat in self.features:
+        #Formula for odds ratio: P(feature=1 | label1) / P(feature=1 | label2)
+        odds_ratio = (self.conditionalProb[(feat, label1)] / self.conditionalProb[(feat, label2)])
+        featuresOdds.append((odds_ratio, feat))
 
-        # Sort and take the top 100
-        featuresOdds.sort(reverse=True)
-        featuresOdds = [feat for _, feat in featuresOdds[:100]]    
-        #util.raiseNotDefined()
+    # Sort and take the top 100
+    featuresOdds.sort(reverse=True)
+    featuresOdds = [feat for _, feat in featuresOdds[:100]]    
+    #util.raiseNotDefined()
 
-        return featuresOdds
+    return featuresOdds
